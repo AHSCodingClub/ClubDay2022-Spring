@@ -174,20 +174,23 @@ struct ContentView: View {
     }
     
     func entireOffset() -> CGSize {
+        let offset: CGSize
         switch selectedItem {
         case 0:
-            return .zero
+            offset = .zero
         case 1:
-            return CGSize(width: -offset1.width, height: -offset1.height)
+            offset = CGSize(width: -offset1.width, height: -offset1.height)
         case 2:
-            return CGSize(width: -offset2.width, height: -offset2.height)
+            offset = CGSize(width: -offset2.width, height: -offset2.height)
         case 3:
-            return CGSize(width: -offset3.width, height: -offset3.height)
+            offset = CGSize(width: -offset3.width, height: -offset3.height)
         case 4:
-            return CGSize(width: -offset4.width, height: -offset4.height)
+            offset = CGSize(width: -offset4.width, height: -offset4.height)
         default:
-            return .zero
+            offset = .zero
         }
+        
+        return offset
     }
     
     func nextStep(_ currentID: UUID, delay: CGFloat, animation: Animation = .spring()) {
