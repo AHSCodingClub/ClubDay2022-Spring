@@ -14,6 +14,7 @@ class ARViewModel: ObservableObject {
     var addText: (() -> Void)?
     var addSphere: (() -> Void)?
     var addSprinkler: (() -> Void)?
+    var clear: (() -> Void)?
     var resume: ((Bool) -> Void)?
 }
 
@@ -48,6 +49,19 @@ struct AugmentedRealityView: View {
         VStack(spacing: 0) {
             ARViewControllerRepresentable(model: model)
                 .ignoresSafeArea()
+                .overlay(alignment: .topTrailing) {
+                    Button {
+                        model.clear?()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.white)
+                            .font(.largeTitle)
+                            .frame(width: 64, height: 64)
+                            .background(.white.opacity(0.3))
+                            .cornerRadius(32)
+                            .padding()
+                    }
+                }
             
             HStack {
                 AugmentedRealityButton(image: "textformat", text: "Text") {
@@ -88,6 +102,7 @@ struct ARViewControllerRepresentable: UIViewControllerRepresentable {
 class ARViewController: UIViewController, ARSCNViewDelegate {
     var model: ARViewModel
     var sceneView: ARSCNView!
+    var nodes = [SCNNode]()
     
     let configuration = ARWorldTrackingConfiguration()
     
@@ -100,6 +115,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         self.configuration.planeDetection = .horizontal
         
         super.init(nibName: nil, bundle: nil)
+        
+        model.clear = { [weak self] in
+            guard let self = self else { return }
+            for node in self.nodes {
+                node.removeFromParentNode()
+            }
+        }
         
         model.resume = { [weak self] resume in
             guard let self = self else { return }
@@ -126,6 +148,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                     z: position.z
                 )
                 node.scale = SCNVector3(0.006, 0.006, 0.006)
+                self.nodes.append(node)
                 self.sceneView.scene.rootNode.addChildNode(node)
             }
         }
@@ -142,7 +165,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                     y: position.y,
                     z: position.z
                 )
-                
+                self.nodes.append(node)
                 self.sceneView.scene.rootNode.addChildNode(node)
             }
         }
@@ -177,7 +200,8 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                     z: position.z
                 )
                 particlesNode.addParticleSystem(particleSystem)
-                
+                self.nodes.append(cylinderNode)
+                self.nodes.append(particlesNode)
                 self.sceneView.scene.rootNode.addChildNode(cylinderNode)
                 self.sceneView.scene.rootNode.addChildNode(particlesNode)
             }
