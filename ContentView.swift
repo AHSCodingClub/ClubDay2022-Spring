@@ -7,6 +7,7 @@ struct ContentView: View {
     @State var selectedItem = 0
     @State var sessionID = UUID()
     @State var hueRotation = false
+    @State var showingInfo = false
     
     let offset1 = CGSize(width: -520, height: 0) /// game
     let offset2 = CGSize(width: 0, height: -360) /// AR
@@ -146,27 +147,67 @@ struct ContentView: View {
                 .opacity(index >= 9 ? 1 : 0)
                 .zIndex(1)
             }
+            .opacity(showingInfo ? 0 : 1)
             .offset(entireOffset())
+            
+            
+            if showingInfo {
+                VStack(alignment: .leading) {
+                    Text("Room 316")
+                        .font(.system(size: 180, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Text("Wednesdays")
+                        .font(.system(size: 136, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                    
+                    Text("@ Lunch")
+                        .font(.system(size: 136, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                }
+                .transition(.scale)
+            }
         }
         .ignoresSafeArea()
-        .overlay(alignment: .bottomTrailing) {
-            Button {
-                withAnimation(.spring()) {
-                    index = 0
-                    selectedItem = 0
-                    bubbles.removeAll()
-                    hueRotation = false
-                    start()
+        .overlay(alignment: .bottom) {
+            HStack {
+                Button {
+                    withAnimation(.spring()) {
+                        showingInfo.toggle()
+                    }
+                } label: {
+                    Text("Room 316, Wed. @ Lunch")
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .frame(height: 64)
+                        .padding(.horizontal, 24)
+                        .background(.white.opacity(0.3))
+                        .cornerRadius(32)
+                        .padding()
                 }
-            } label: {
-                Image(systemName: "arrow.clockwise")
-                    .foregroundColor(.white)
-                    .font(.largeTitle)
-                    .frame(width: 64, height: 64)
-                    .background(.white.opacity(0.3))
-                    .cornerRadius(32)
-                    .padding()
+                
+                Spacer()
+                
+                Button {
+                    withAnimation(.spring()) {
+                        index = 0
+                        selectedItem = 0
+                        bubbles.removeAll()
+                        hueRotation = false
+                        showingInfo = false
+                        start()
+                    }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundColor(.white)
+                        .font(.largeTitle)
+                        .frame(width: 64, height: 64)
+                        .background(.white.opacity(0.3))
+                        .cornerRadius(32)
+                        .padding()
+                }
             }
+            .opacity(index >= 9 ? 1 : 0)
         }
         .onAppear {
             start()
