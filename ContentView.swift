@@ -91,7 +91,7 @@ struct ContentView: View {
                         selectedItem = 1
                     }
                 }
-                .scaleEffect(selectedItem == 1 ? 1 : 0.6)
+                .scaleEffect(selectedItem == 1 && index >= 9 ? 1 : 0.6)
                 .rotation3DEffect(.degrees(selectedItem == 1 ? 0 : 10), axis: (x: 0.8, y: 0.4, z: 0.2))
                 .offset(offset1)
                 .opacity(index >= 9 ? 1 : 0)
@@ -107,7 +107,7 @@ struct ContentView: View {
                     }
                 }
                 
-                .scaleEffect(selectedItem == 2 ? 1 : 0.35)
+                .scaleEffect(selectedItem == 2 && index >= 9 ? 1 : 0.35)
                 .rotation3DEffect(.degrees(selectedItem == 2 ? 0 : 10), axis: (x: -0.8, y: 0.4, z: 0.2))
                 .offset(offset2)
                 .opacity(index >= 9 ? 1 : 0)
@@ -124,7 +124,7 @@ struct ContentView: View {
                     }
                 }
                 .frame(width: 500, height: 900)
-                .scaleEffect(selectedItem == 3 ? 1 : 0.6)
+                .scaleEffect(selectedItem == 3 && index >= 9 ? 1 : 0.6)
                 .rotation3DEffect(.degrees(selectedItem == 3 ? 0 : 10), axis: (x: -0.1, y: 0.5, z: -0.3))
                 .offset(offset3)
                 .opacity(index >= 9 ? 1 : 0)
@@ -140,7 +140,7 @@ struct ContentView: View {
                     }
                 }
                 .frame(width: 900, height: 700)
-                .scaleEffect(selectedItem == 4 ? 1 : 0.35)
+                .scaleEffect(selectedItem == 4 && index >= 9 ? 1 : 0.35)
                 .rotation3DEffect(.degrees(selectedItem == 4 ? 0 : 10), axis: (x: 0.5, y: 0.6, z: -0.2))
                 .offset(offset4)
                 .opacity(index >= 9 ? 1 : 0)

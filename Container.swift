@@ -19,5 +19,11 @@ struct Container<Content: View>: View {
             .padding(10)
             .background(.black)
             .cornerRadius(30)
+            .shadow(
+                color: .black.opacity(0.3),
+                radius: 20,
+                x: 2,
+                y: 5
+            )
     }
 }

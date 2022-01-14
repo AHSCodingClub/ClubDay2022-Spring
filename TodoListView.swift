@@ -83,18 +83,27 @@ struct TodoListView: View {
                 }
                 
                 Section("Actions") {
-                    Button("Add Item") {
+                    Button {
                         let newItem = TodoListItem()
                         withAnimation(.spring()) {
                             items.insert(newItem, at: 0)
                         }
+                    } label: {
+                        Text("Add Item")
+                        .foregroundColor(.green)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
-                    .foregroundColor(.green)
                     .buttonStyle(.plain)
                     .opacity(editMode.isEditing ? 0.5 : 1)
                     
-                    Button("Print Items") {
+                    Button {
                         showingAlert = true
+                    } label: {
+                        Text("Print Items")
+                        .foregroundColor(.green)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
                     }
                     .alert("Here are your current items", isPresented: $showingAlert) {
                         Button("Ok", role: .cancel) { }
@@ -102,7 +111,6 @@ struct TodoListView: View {
                         let string = items.map { "Name: \($0.name), completed: \($0.completed)" }.joined(separator: "\n")
                         Text(verbatim: string)
                     }
-                    .foregroundColor(.green)
                     .buttonStyle(.plain)
                     .opacity(editMode.isEditing ? 0.5 : 1)
                 }
