@@ -68,9 +68,11 @@ struct TutorialView: View {
                 
                 Spacer()
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding()
+            .background(Color(uiColor: .secondarySystemFill))
+            .cornerRadius(24)
+            .padding()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
-        .background(Color(uiColor: .secondarySystemFill))
     }
 }

@@ -5,6 +5,7 @@ struct ContentView: View {
     @State var index = 0
     @State var bubbles = [Bubble]()
     @State var selectedItem = 0
+    @State var sessionID = UUID()
     
     let offset1 = CGSize(width: -520, height: 0) /// game
     let offset2 = CGSize(width: 0, height: -360) /// AR
@@ -23,127 +24,148 @@ struct ContentView: View {
                     .ignoresSafeArea()
             }
             
-            HStack(spacing: 30) {
-                if index >= 1 {
-                    Image("Logo")
-                        .resizable()
-                        .frame(width: 136, height: 132)
-                        .cornerRadius(32)
-                        .transition(.scale)
+            ZStack {
+                HStack(spacing: 30) {
+                    if index >= 1 {
+                        Image("Logo")
+                            .resizable()
+                            .frame(width: 136, height: 132)
+                            .cornerRadius(32)
+                            .transition(.scale)
+                    }
+                    
+                    if index != 10 && index != 11 {
+                        Text("Coding Club")
+                            .gradientForeground([.blue, Color(uiColor: UIColor(hex: 0x00aeef))])
+                            .font(.system(size: 136, weight: .semibold))
+                    }
                 }
-                
-                if index != 10 && index != 11 {
-                    Text("Coding Club")
-                        .gradientForeground([.blue, Color(uiColor: UIColor(hex: 0x00aeef))])
-                        .font(.system(size: 136, weight: .semibold))
+                .scaleEffect(index >= 2 ? 0.96 : 1)
+                .padding(index >= 2 ? 60 : 20)
+                .background {
+                    Color(uiColor: .systemBackground)
+                        .cornerRadius(48)
                 }
-            }
-            .scaleEffect(index >= 2 ? 0.96 : 1)
-            .padding(index >= 2 ? 60 : 20)
-            .background {
-                Color(uiColor: .systemBackground)
-                    .cornerRadius(48)
-            }
-            .overlay(
-                RoundedRectangle(cornerRadius: 48)
-                    .trim(from: 0, to: index >= 3 ? 1 : 0)
-                    .stroke(
-                        AngularGradient(
-                            colors: [
-                                .red,
-                                .yellow,
-                                .green,
-                                .blue,
-                                .red,
-                            ],
-                            center: .center
+                .overlay(
+                    RoundedRectangle(cornerRadius: 48)
+                        .trim(from: 0, to: index >= 3 ? 1 : 0)
+                        .stroke(
+                            AngularGradient(
+                                colors: [
+                                    .red,
+                                    .yellow,
+                                    .green,
+                                    .blue,
+                                    .red,
+                                ],
+                                center: .center
+                            )
+                            , lineWidth: 10
                         )
-                        , lineWidth: 10
-                    )
-            )
-            .scaleEffect(index == 11 ? 2 : 1)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background {
-                BackgroundView(index: index, bubbles: bubbles)
-                .disabled(selectedItem != 0)
+                )
+                .scaleEffect(index == 11 ? 2 : 1)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background {
+                    BackgroundView(index: index, bubbles: bubbles)
+                        .disabled(selectedItem != 0)
+                        .onTapGesture {
+                            withAnimation(.spring()) {
+                                selectedItem = 0
+                            }
+                        }
+                }
+                .transition(.scale(scale: 6).combined(with: .opacity))
+                .padding(index >= 5 ? 100 : 0)
+                .scaleEffect(index >= 9 ? 0.7 : 1)
+                .rotation3DEffect(.degrees(getRotationDegrees()), axis: (x: 0.8, y: 0.4, z: 0.2))
+                .zIndex(selectedItem == 0 ? 5 : 0)
+                
+                Container {
+                    GameView()
+                }
+                .frame(width: 500, height: 900)
+                .disabled(selectedItem != 1)
                 .onTapGesture {
                     withAnimation(.spring()) {
-                        selectedItem = 0
+                        selectedItem = 1
                     }
                 }
-            }
-            .transition(.scale(scale: 6).combined(with: .opacity))
-            .padding(index >= 5 ? 100 : 0)
-            .scaleEffect(index >= 9 ? 0.6 : 1)
-            .rotation3DEffect(.degrees(getRotationDegrees()), axis: (x: 0.8, y: 0.4, z: 0.2))
-            .background {
-                ZStack {
-                    
-                    Container {
-                        GameView()
-                    }
-                    .frame(width: 500, height: 900)
-                    
-                    .disabled(selectedItem != 1)
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            selectedItem = 1
-                        }
-                    }
-                    .scaleEffect(selectedItem == 1 ? 1 : 0.7)
-                    .rotation3DEffect(.degrees(selectedItem == 1 ? 0 : 10), axis: (x: 0.8, y: 0.4, z: 0.2))
-                    .offset(offset1)
-                    
-                    Container {
-                        AugmentedRealityView()
-                    }
-                    .frame(width: 900, height: 700)
-                    .disabled(selectedItem != 2)
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            selectedItem = 2
-                        }
-                    }
-                    
-                    .scaleEffect(selectedItem == 2 ? 1 : 0.4)
-                    .rotation3DEffect(.degrees(selectedItem == 2 ? 0 : 10), axis: (x: -0.8, y: 0.4, z: 0.2))
-                    .offset(offset2)
-                    
-                    Container {
-                        TodoListView()
-                    }
-                    
-                    .disabled(selectedItem != 3)
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            selectedItem = 3
-                        }
-                    }
-                    .frame(width: 500, height: 900)
-                    .scaleEffect(selectedItem == 3 ? 1 : 0.7)
-                    .rotation3DEffect(.degrees(selectedItem == 3 ? 0 : 10), axis: (x: -0.1, y: 0.5, z: -0.3))
-                    .offset(offset3)
-                    
-                    Container {
-                        TutorialView()
-                    }
-                    
-                    .disabled(selectedItem != 4)
-                    .onTapGesture {
-                        withAnimation(.spring()) {
-                            selectedItem = 4
-                        }
-                    }
-                    .frame(width: 900, height: 700)
-                    .scaleEffect(selectedItem == 4 ? 1 : 0.4)
-                    .rotation3DEffect(.degrees(selectedItem == 4 ? 0 : 10), axis: (x: 0.5, y: 0.6, z: -0.2))
-                    .offset(offset4)
-                }
+                .scaleEffect(selectedItem == 1 ? 1 : 0.6)
+                .rotation3DEffect(.degrees(selectedItem == 1 ? 0 : 10), axis: (x: 0.8, y: 0.4, z: 0.2))
+                .offset(offset1)
                 .opacity(index >= 9 ? 1 : 0)
+                
+                Container {
+                    AugmentedRealityView(focused: selectedItem == 2)
+                }
+                .frame(width: 900, height: 700)
+                .disabled(selectedItem != 2)
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        selectedItem = 2
+                    }
+                }
+                
+                .scaleEffect(selectedItem == 2 ? 1 : 0.35)
+                .rotation3DEffect(.degrees(selectedItem == 2 ? 0 : 10), axis: (x: -0.8, y: 0.4, z: 0.2))
+                .offset(offset2)
+                .opacity(index >= 9 ? 1 : 0)
+                .zIndex(1)
+                
+                Container {
+                    TodoListView()
+                }
+                
+                .disabled(selectedItem != 3)
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        selectedItem = 3
+                    }
+                }
+                .frame(width: 500, height: 900)
+                .scaleEffect(selectedItem == 3 ? 1 : 0.6)
+                .rotation3DEffect(.degrees(selectedItem == 3 ? 0 : 10), axis: (x: -0.1, y: 0.5, z: -0.3))
+                .offset(offset3)
+                .opacity(index >= 9 ? 1 : 0)
+                
+                Container {
+                    TutorialView()
+                }
+                
+                .disabled(selectedItem != 4)
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        selectedItem = 4
+                    }
+                }
+                .frame(width: 900, height: 700)
+                .scaleEffect(selectedItem == 4 ? 1 : 0.35)
+                .rotation3DEffect(.degrees(selectedItem == 4 ? 0 : 10), axis: (x: 0.5, y: 0.6, z: -0.2))
+                .offset(offset4)
+                .opacity(index >= 9 ? 1 : 0)
+                .zIndex(1)
             }
             .offset(entireOffset())
         }
         .ignoresSafeArea()
+        .overlay(alignment: .bottomTrailing) {
+            Button {
+                withAnimation(.spring()) {
+                    index = 0
+                    selectedItem = 0
+                    bubbles.removeAll()
+                    start()
+                }
+            } label: {
+                Image(systemName: "arrow.clockwise")
+                    .foregroundColor(.white)
+                    .font(.largeTitle)
+                    .frame(width: 64, height: 64)
+                    .background(.white.opacity(0.3))
+                    .cornerRadius(32)
+                    .padding()
+            }
+        }
         .onAppear {
             start()
         }
@@ -166,64 +188,97 @@ struct ContentView: View {
         }
     }
     
-    func nextStep(delay: CGFloat, animation: Animation = .spring()) {
+    func nextStep(_ currentID: UUID, delay: CGFloat, animation: Animation = .spring()) {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            withAnimation(animation) {
-                index += 1
+            if currentID == sessionID {
+                withAnimation(animation) {
+                    index += 1
+                }
             }
         }
     }
     
-    func start() {
-        nextStep(delay: 1)
-        nextStep(delay: 2)
-        nextStep(delay: 3, animation: .easeOut(duration: 3))
+    func addBubbles() {
+        for index in 0..<36 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
+                addBubble(colorOffset: CGFloat(index) / 18)
+            }
+        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            index = 4
-            
-            for index in 0..<36 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
-                    addBubble(colorOffset: CGFloat(index) / 18)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+            removeBubbles()
+        }
+    }
+    func removeBubbles() {
+        for index in 0..<bubbles.count {
+            DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
+                if bubbles.count >= 1 {
+                    withAnimation(.spring(
+                        response: 0.8,
+                        dampingFraction: 0.6,
+                        blendDuration: 0.8
+                    )) {
+                        bubbles.removeLast()
+                    }
                 }
             }
         }
         
-        nextStep(delay: 5, animation: .spring(
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            addBubbles()
+        }
+    }
+    
+    func start() {
+        sessionID = UUID()
+        let currentID = sessionID
+        
+        nextStep(currentID, delay: 1)
+        nextStep(currentID, delay: 2)
+        nextStep(currentID, delay: 3, animation: .easeOut(duration: 3))
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            if currentID == sessionID {
+                index = 4
+                addBubbles()
+            }
+        }
+        
+        nextStep(currentID, delay: 5, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
         
-        nextStep(delay: 6)
+        nextStep(currentID, delay: 6)
         
-        nextStep(delay: 7, animation: .spring(
+        nextStep(currentID, delay: 7, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
         
-        nextStep(delay: 8, animation: .easeOut(duration: 6))
-        nextStep(delay: 9, animation: .spring(
+        nextStep(currentID, delay: 8, animation: .easeOut(duration: 6))
+        nextStep(currentID, delay: 9, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
         
         /// hide text
-        nextStep(delay: 10, animation: .spring(
+        nextStep(currentID, delay: 10, animation: .spring(
             response: 0.8,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
         
-        nextStep(delay: 11, animation: .spring(
+        nextStep(currentID, delay: 11, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
         
-        nextStep(delay: 17, animation: .spring(
+        nextStep(currentID, delay: 17, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
@@ -231,7 +286,9 @@ struct ContentView: View {
     }
     
     func getRotationDegrees() -> CGFloat {
-        if index >= 8 {
+        if index >= 9, selectedItem == 0 {
+            return 0
+        } else if index >= 8 {
             return 10
         }
         return 0

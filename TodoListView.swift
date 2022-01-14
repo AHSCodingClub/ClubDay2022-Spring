@@ -39,7 +39,7 @@ struct PieChart: Shape {
     }
 }
 struct TodoListView: View {
-    @AppStorage("items") var items = [
+    @State var items = [
         TodoListItem(name: "Learn Swift", completed: true),
         TodoListItem(name: "Learn SwiftUI", completed: false),
         TodoListItem(name: "Bake a cookie", completed: false),
@@ -89,6 +89,7 @@ struct TodoListView: View {
                             items.insert(newItem, at: 0)
                         }
                     }
+                    .buttonStyle(.plain)
                     .opacity(editMode.isEditing ? 0.5 : 1)
                     
                     Button("Print Items") {
@@ -100,6 +101,7 @@ struct TodoListView: View {
                         let string = items.map { "Name: \($0.name), completed: \($0.completed)" }.joined(separator: "\n")
                         Text(verbatim: string)
                     }
+                    .buttonStyle(.plain)
                     .opacity(editMode.isEditing ? 0.5 : 1)
                 }
                 
@@ -117,7 +119,9 @@ struct TodoListView: View {
                             } label: {
                                 Image(systemName: "checkmark.circle")
                                     .symbolVariant(item.completed ? .fill : .none)
+                                    .foregroundColor(.green)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                     .onDelete(perform: delete)

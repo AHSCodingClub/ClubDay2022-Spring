@@ -30,7 +30,7 @@ struct Question {
 
 
 struct GameView: View {
-    @AppStorage("targetScore") var targetScore = 3
+    @AppStorage("targetScore") var targetScore = 5
     @State var redScore = 0
     @State var blueScore = 0
     @State var redQuestion = Question(text: "2 + 2", answer: 4)

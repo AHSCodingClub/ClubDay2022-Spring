@@ -14,6 +14,7 @@ class ARViewModel: ObservableObject {
     var addText: (() -> Void)?
     var addSphere: (() -> Void)?
     var addSprinkler: (() -> Void)?
+    var resume: ((Bool) -> Void)?
 }
 
 struct AugmentedRealityButton: View {
@@ -39,7 +40,9 @@ struct AugmentedRealityButton: View {
     }
 }
 struct AugmentedRealityView: View {
+    let focused: Bool
     @StateObject var model = ARViewModel()
+
     
     var body: some View {
         VStack(spacing: 0) {
@@ -63,6 +66,9 @@ struct AugmentedRealityView: View {
                 Color(uiColor: .secondarySystemBackground)
             )
         }
+        .onChange(of: focused) { newValue in
+            model.resume?(newValue)
+        }
     }
 }
 
@@ -83,13 +89,26 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     var model: ARViewModel
     var sceneView: ARSCNView!
     
+    let configuration = ARWorldTrackingConfiguration()
+    
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     init(model: ARViewModel) {
         self.model = model
+        self.configuration.planeDetection = .horizontal
+        
         super.init(nibName: nil, bundle: nil)
+        
+        model.resume = { [weak self] resume in
+            guard let self = self else { return }
+            if resume {
+                self.sceneView.session.run(self.configuration)
+            } else {
+                self.sceneView.session.pause()
+            }
+        }
         
         model.addText = { [weak self] in
             guard let self = self else { return }
@@ -198,11 +217,6 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
-        
-        configuration.planeDetection = .horizontal
         
         sceneView.autoenablesDefaultLighting = true
         sceneView.session.run(configuration)
