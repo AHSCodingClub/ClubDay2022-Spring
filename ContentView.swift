@@ -6,6 +6,7 @@ struct ContentView: View {
     @State var bubbles = [Bubble]()
     @State var selectedItem = 0
     @State var sessionID = UUID()
+    @State var hueRotation = false
     
     let offset1 = CGSize(width: -520, height: 0) /// game
     let offset2 = CGSize(width: 0, height: -360) /// AR
@@ -20,7 +21,7 @@ struct ContentView: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                    .hueRotation(.degrees(index >= 8 ? 180 : 0))
+                    .hueRotation(.degrees(hueRotation ? 180 : 0))
                     .ignoresSafeArea()
             }
             
@@ -75,8 +76,8 @@ struct ContentView: View {
                         }
                 }
                 .transition(.scale(scale: 6).combined(with: .opacity))
-                .padding(index >= 5 ? 100 : 0)
-                .scaleEffect(index >= 9 ? 0.7 : 1)
+                .padding(index >= 5 ? 90 : 0)
+                .scaleEffect(index >= 9 ? 0.8 : 1)
                 .rotation3DEffect(.degrees(getRotationDegrees()), axis: (x: 0.8, y: 0.4, z: 0.2))
                 .zIndex(selectedItem == 0 ? 5 : 0)
                 
@@ -154,6 +155,7 @@ struct ContentView: View {
                     index = 0
                     selectedItem = 0
                     bubbles.removeAll()
+                    hueRotation = false
                     start()
                 }
             } label: {
@@ -259,6 +261,14 @@ struct ContentView: View {
         ))
         
         nextStep(currentID, delay: 8, animation: .easeOut(duration: 6))
+        DispatchQueue.main.asyncAfter(deadline: .now() + 9) {
+            if currentID == sessionID {
+                withAnimation(.easeOut(duration: 10).repeatForever(autoreverses: true)) {
+                    hueRotation = true
+                }
+            }
+        }
+        
         nextStep(currentID, delay: 9, animation: .spring(
             response: 3,
             dampingFraction: 0.7,

@@ -35,7 +35,6 @@ struct TutorialView: View {
             .padding()
             .background(Color(uiColor: .secondarySystemFill))
             .cornerRadius(24)
-            .padding()
             
             VStack {
                 Text("Result")
@@ -43,7 +42,7 @@ struct TutorialView: View {
                 
                 
                 VStack {
-                    Text("Hello World!")
+                    Text("Hello, world!")
                         .font(.system(size: 60, weight: .semibold))
                         .padding(20)
                         .frame(maxWidth: .infinity)
@@ -56,8 +55,9 @@ struct TutorialView: View {
                         .background(Color.white)
                     
                     VStack {
-                        Text("Hello World!")
+                        Text("Hello, world!")
                             .font(.system(size: 60, weight: .semibold))
+                        
                         Image(systemName: "star")
                             .font(.system(size: 60, weight: .semibold))
                     }
@@ -72,7 +72,7 @@ struct TutorialView: View {
             .padding()
             .background(Color(uiColor: .secondarySystemFill))
             .cornerRadius(24)
-            .padding()
         }
+        .padding()
     }
 }

@@ -89,6 +89,7 @@ struct TodoListView: View {
                             items.insert(newItem, at: 0)
                         }
                     }
+                    .foregroundColor(.green)
                     .buttonStyle(.plain)
                     .opacity(editMode.isEditing ? 0.5 : 1)
                     
@@ -101,6 +102,7 @@ struct TodoListView: View {
                         let string = items.map { "Name: \($0.name), completed: \($0.completed)" }.joined(separator: "\n")
                         Text(verbatim: string)
                     }
+                    .foregroundColor(.green)
                     .buttonStyle(.plain)
                     .opacity(editMode.isEditing ? 0.5 : 1)
                 }

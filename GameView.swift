@@ -303,12 +303,14 @@ struct GameSideView: View {
             }
         }
         .onChange(of: winner) { _ in
-            if winner != nil {
+            if let winner = winner {
                 let currentID = currentGameID
                 for index in 0..<60 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
                         if currentID == currentGameID {
-                            addBubble(colorOffset: CGFloat(index) / 18)
+                            let color = winner == .blue ? UIColor.systemBlue : UIColor.systemRed
+                            let colorIndex = index - 30
+                            addBubble(colorOffset: CGFloat(colorIndex) / 300, overrideColor: color)
                         }
                     }
                 }
@@ -365,8 +367,14 @@ struct GameSideView: View {
         }
     }
     
-    func addBubble(colorOffset: CGFloat) {
-        let uiColor = UIColor(player.color).offset(by: colorOffset)
+    func addBubble(colorOffset: CGFloat, overrideColor: UIColor? = nil) {
+        
+        let uiColor: UIColor
+        if let overrideColor = overrideColor {
+            uiColor = overrideColor.offset(by: colorOffset)
+        } else {
+            uiColor = UIColor(player.color).offset(by: colorOffset)
+        }
         let newBubble = Bubble(
             length: CGFloat.random(in: 100...300),
             offset: CGSize(
