@@ -6,7 +6,6 @@
 //  Copyright © 2022 A. Zheng. All rights reserved.
 //
 
-
 import SwiftUI
 
 struct TutorialView: View {
@@ -15,8 +14,7 @@ struct TutorialView: View {
             VStack {
                 Text("Code")
                     .font(.system(size: 60, weight: .semibold, design: .monospaced))
-                
-                
+
                 VStack {
                     Image("TextCode")
                         .resizable()
@@ -28,36 +26,35 @@ struct TutorialView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 }
-                
+
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding()
             .background(Color(uiColor: .secondarySystemFill))
             .cornerRadius(24)
-            
+
             VStack {
                 Text("Result")
                     .font(.system(size: 60, weight: .semibold, design: .monospaced))
-                
-                
+
                 VStack {
                     Text("Hello, world!")
                         .font(.system(size: 60, weight: .semibold))
                         .padding(20)
                         .frame(maxWidth: .infinity)
                         .background(Color.white)
-                    
+
                     Image(systemName: "star")
                         .font(.system(size: 60, weight: .semibold))
                         .padding(20)
                         .frame(maxWidth: .infinity)
                         .background(Color.white)
-                    
+
                     VStack {
                         Text("Hello, world!")
                             .font(.system(size: 60, weight: .semibold))
-                        
+
                         Image(systemName: "star")
                             .font(.system(size: 60, weight: .semibold))
                     }
@@ -65,7 +62,7 @@ struct TutorialView: View {
                     .frame(maxWidth: .infinity)
                     .background(Color.white)
                 }
-                
+
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

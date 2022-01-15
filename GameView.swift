@@ -6,13 +6,12 @@
 //  Copyright © 2022 A. Zheng. All rights reserved.
 //
 
-
 import SwiftUI
 
 enum Player {
     case red
     case blue
-    
+
     var color: Color {
         switch self {
         case .red:
@@ -28,7 +27,6 @@ struct Question {
     var answer: Int
 }
 
-
 struct GameView: View {
     @AppStorage("targetScore") var targetScore = 5
     @State var redScore = 0
@@ -37,12 +35,12 @@ struct GameView: View {
     @State var blueQuestion = Question(text: "2 + 2", answer: 4)
     @State var winner: Player?
     @State var currentGameID = UUID()
-    
+
     var body: some View {
         VStack {
             GameSideView(player: .red, targetScore: targetScore, score: $redScore, question: $redQuestion, winner: $winner, currentGameID: $currentGameID)
                 .scaleEffect(x: -1, y: -1)
-            
+
             GameSideView(player: .blue, targetScore: targetScore, score: $blueScore, question: $blueQuestion, winner: $winner, currentGameID: $currentGameID)
         }
         .overlay {
@@ -73,18 +71,18 @@ struct GameView: View {
                         }
                     }
                 }
-                
+
                 Button {
                     redScore = 0
                     blueScore = 0
                     redQuestion = Question(text: "2 + 2", answer: 4)
                     blueQuestion = Question(text: "2 + 2", answer: 4)
                     currentGameID = UUID()
-                    
+
                     withAnimation(.spring()) {
                         winner = nil
                     }
-                    
+
                 } label: {
                     Text("Play Again?")
                 }
@@ -103,11 +101,11 @@ struct GameView: View {
             .opacity(winner == nil ? 0 : 1)
         }
     }
-    
+
     func getCenterViewOffset() -> CGSize {
         let difference = redScore - blueScore
         let offset = difference * 10
-        
+
         if let winner = winner {
             switch winner {
             case .red:
@@ -128,16 +126,15 @@ struct CenterView: View {
     @Binding var redQuestion: Question
     @Binding var blueQuestion: Question
     @State var showingSettings = false
-    
+
     var body: some View {
         ZStack {
-
             HStack {
                 VStack(spacing: 16) {
                     Text("Score: \(redScore)")
                         .foregroundColor(.red)
                         .scaleEffect(x: -1, y: -1)
-                    
+
                     Text("Score: \(blueScore)")
                         .foregroundColor(.blue)
                 }
@@ -152,13 +149,12 @@ struct CenterView: View {
             .overlay(
                 HStack {
                     Spacer()
-                    
+
                     Button {
                         withAnimation {
                             showingSettings.toggle()
                         }
                     } label: {
-                        
                         VStack {
                             if showingSettings {
                                 Image(systemName: "xmark")
@@ -179,17 +175,17 @@ struct CenterView: View {
                     .padding(.trailing, 10)
                 }
             )
-            
+
             VStack(spacing: 0) {
                 QuestionSideView(question: $redQuestion)
                     .scaleEffect(x: -1, y: -1)
                     .padding()
-                
+
                 Rectangle()
                     .fill(.green)
                     .opacity(0.5)
                     .frame(height: 1)
-                
+
                 QuestionSideView(question: $blueQuestion)
                     .padding()
             }
@@ -201,11 +197,11 @@ struct CenterView: View {
                     .stroke(Color.green, lineWidth: 5)
             )
         }
-        
+
         .overlay(
             VStack {
                 Text("Change Target Score (\(targetScore))")
-                
+
                 HStack {
                     Group {
                         Button("5") { withAnimation { showingSettings = false }; targetScore = 5 }
@@ -217,17 +213,18 @@ struct CenterView: View {
                     .cornerRadius(12)
                 }
             }
-                .padding()
-                .background(.regularMaterial)
-                .cornerRadius(16)
-                .opacity(showingSettings ? 1 : 0)
-                .offset(x: 0, y: showingSettings ? 0 : 80)
+            .padding()
+            .background(.regularMaterial)
+            .cornerRadius(16)
+            .opacity(showingSettings ? 1 : 0)
+            .offset(x: 0, y: showingSettings ? 0 : 80)
         )
     }
 }
+
 struct QuestionSideView: View {
     @Binding var question: Question
-    
+
     var body: some View {
         Text(question.text)
             .font(.system(.largeTitle, design: .rounded))
@@ -238,8 +235,8 @@ struct QuestionSideView: View {
 struct GameButton: View {
     let color: Color
     let number: Int
-    let action: (() -> Void)
-    
+    let action: () -> Void
+
     var body: some View {
         Button(action: action) {
             Text("\(number)")
@@ -252,6 +249,7 @@ struct GameButton: View {
         }
     }
 }
+
 struct GameSideView: View {
     let player: Player
     let targetScore: Int
@@ -260,7 +258,7 @@ struct GameSideView: View {
     @State var bubbles = [Bubble]()
     @Binding var winner: Player?
     @Binding var currentGameID: UUID
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -289,7 +287,7 @@ struct GameSideView: View {
                             LinearGradient(
                                 colors: [
                                     Color(uiColor: bubble.color),
-                                    Color(uiColor: bubble.color.offset(by: 0.1))
+                                    Color(uiColor: bubble.color.offset(by: 0.1)),
                                 ],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
@@ -305,7 +303,7 @@ struct GameSideView: View {
         .onChange(of: winner) { _ in
             if let winner = winner {
                 let currentID = currentGameID
-                for index in 0..<60 {
+                for index in 0 ..< 60 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
                         if currentID == currentGameID {
                             let color = winner == .blue ? UIColor.systemBlue : UIColor.systemRed
@@ -321,13 +319,13 @@ struct GameSideView: View {
             }
         }
     }
-    
+
     func validate(attemptedAnswer: Int) {
         if question.answer == attemptedAnswer {
             withAnimation(.spring()) {
                 score += 1
             }
-            
+
             addBubble(colorOffset: CGFloat(score) / 18)
         } else {
             withAnimation(.spring()) {
@@ -335,10 +333,10 @@ struct GameSideView: View {
                     score -= 1
                 }
             }
-            
+
             removeLastBubble()
         }
-        
+
         if score >= targetScore {
             withAnimation(.spring()) {
                 winner = player
@@ -347,28 +345,27 @@ struct GameSideView: View {
             question = getQuestion()
         }
     }
-    
+
     func getQuestion() -> Question {
         let isAddition = Bool.random()
         if isAddition {
-            let firstNumber = Int.random(in: 1...4)
-            let secondNumber = Int.random(in: 0...(9 - firstNumber))
-            
+            let firstNumber = Int.random(in: 1 ... 4)
+            let secondNumber = Int.random(in: 0 ... (9 - firstNumber))
+
             let text = "\(firstNumber) + \(secondNumber)"
             let answer = firstNumber + secondNumber
             return Question(text: text, answer: answer)
         } else {
-            let firstNumber = Int.random(in: 5...9)
-            let secondNumber = Int.random(in: 0...(firstNumber - 1))
-            
+            let firstNumber = Int.random(in: 5 ... 9)
+            let secondNumber = Int.random(in: 0 ... (firstNumber - 1))
+
             let text = "\(firstNumber) - \(secondNumber)"
             let answer = firstNumber - secondNumber
             return Question(text: text, answer: answer)
         }
     }
-    
+
     func addBubble(colorOffset: CGFloat, overrideColor: UIColor? = nil) {
-        
         let uiColor: UIColor
         if let overrideColor = overrideColor {
             uiColor = overrideColor.offset(by: colorOffset)
@@ -376,15 +373,15 @@ struct GameSideView: View {
             uiColor = UIColor(player.color).offset(by: colorOffset)
         }
         let newBubble = Bubble(
-            length: CGFloat.random(in: 100...300),
+            length: CGFloat.random(in: 100 ... 300),
             offset: CGSize(
-                width: CGFloat.random(in: -240...240),
-                height: CGFloat.random(in: -240...240)
+                width: CGFloat.random(in: -240 ... 240),
+                height: CGFloat.random(in: -240 ... 240)
             ),
             color: uiColor,
             opacity: 1
         )
-        
+
         withAnimation(.spring(
             response: 0.8,
             dampingFraction: 0.6,
@@ -398,7 +395,7 @@ struct GameSideView: View {
             }
         }
     }
-    
+
     func removeLastBubble() {
         withAnimation(.spring(
             response: 0.8,

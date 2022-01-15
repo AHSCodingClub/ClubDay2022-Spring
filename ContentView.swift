@@ -1,19 +1,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    
     @State var index = 0
     @State var bubbles = [Bubble]()
     @State var selectedItem = 0
     @State var sessionID = UUID()
     @State var hueRotation = false
     @State var showingInfo = false
-    
+
     let offset1 = CGSize(width: -520, height: 0) /// game
     let offset2 = CGSize(width: 0, height: -360) /// AR
     let offset3 = CGSize(width: 520, height: 0) /// todo
     let offset4 = CGSize(width: 0, height: 360) /// tutorial
-    
+
     var body: some View {
         ZStack {
             if index >= 7 {
@@ -22,10 +21,10 @@ struct ContentView: View {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                    .hueRotation(.degrees(hueRotation ? 180 : 0))
-                    .ignoresSafeArea()
+                .hueRotation(.degrees(hueRotation ? 180 : 0))
+                .ignoresSafeArea()
             }
-            
+
             ZStack {
                 HStack(spacing: 30) {
                     if index >= 1 {
@@ -35,10 +34,10 @@ struct ContentView: View {
                             .cornerRadius(32)
                             .transition(.scale)
                     }
-                    
+
                     if index != 10 && index != 11 {
                         Text("Coding Club")
-                            .gradientForeground([.blue, Color(uiColor: UIColor(hex: 0x00aeef))])
+                            .gradientForeground([.blue, Color(uiColor: UIColor(hex: 0x00AEEF))])
                             .font(.system(size: 136, weight: .semibold))
                     }
                 }
@@ -61,8 +60,8 @@ struct ContentView: View {
                                     .red,
                                 ],
                                 center: .center
-                            )
-                            , lineWidth: 10
+                            ),
+                            lineWidth: 10
                         )
                 )
                 .scaleEffect(index == 11 ? 2 : 1)
@@ -81,7 +80,7 @@ struct ContentView: View {
                 .scaleEffect(index >= 9 ? 0.8 : 1)
                 .rotation3DEffect(.degrees(getRotationDegrees()), axis: (x: 0.8, y: 0.4, z: 0.2))
                 .zIndex(selectedItem == 0 ? 5 : 0)
-                
+
                 Container {
                     GameView()
                 }
@@ -96,7 +95,7 @@ struct ContentView: View {
                 .rotation3DEffect(.degrees(selectedItem == 1 ? 0 : 10), axis: (x: 0.8, y: 0.4, z: 0.2))
                 .offset(offset1)
                 .opacity(index >= 9 ? 1 : 0)
-                
+
                 Container {
                     AugmentedRealityView(focused: selectedItem == 2)
                 }
@@ -107,17 +106,17 @@ struct ContentView: View {
                         selectedItem = 2
                     }
                 }
-                
+
                 .scaleEffect(selectedItem == 2 && index >= 9 ? 1 : 0.35)
                 .rotation3DEffect(.degrees(selectedItem == 2 ? 0 : 10), axis: (x: -0.8, y: 0.4, z: 0.2))
                 .offset(offset2)
                 .opacity(index >= 9 ? 1 : 0)
                 .zIndex(1)
-                
+
                 Container {
                     TodoListView()
                 }
-                
+
                 .disabled(selectedItem != 3)
                 .onTapGesture {
                     withAnimation(.spring()) {
@@ -129,11 +128,11 @@ struct ContentView: View {
                 .rotation3DEffect(.degrees(selectedItem == 3 ? 0 : 10), axis: (x: -0.1, y: 0.5, z: -0.3))
                 .offset(offset3)
                 .opacity(index >= 9 ? 1 : 0)
-                
+
                 Container {
                     TutorialView()
                 }
-                
+
                 .disabled(selectedItem != 4)
                 .onTapGesture {
                     withAnimation(.spring()) {
@@ -149,18 +148,17 @@ struct ContentView: View {
             }
             .opacity(showingInfo ? 0 : 1)
             .offset(entireOffset())
-            
-            
+
             if showingInfo {
                 VStack(alignment: .leading) {
                     Text("Room 316")
                         .font(.system(size: 180, weight: .semibold))
                         .foregroundColor(.white)
-                    
+
                     Text("Wednesdays")
                         .font(.system(size: 136, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
-                    
+
                     Text("@ Lunch")
                         .font(.system(size: 136, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
@@ -171,23 +169,8 @@ struct ContentView: View {
         .ignoresSafeArea()
         .overlay(alignment: .bottom) {
             HStack {
-                Button {
-                    withAnimation(.spring()) {
-                        showingInfo.toggle()
-                    }
-                } label: {
-                    Text("Room 316, Wed. @ Lunch")
-                        .foregroundColor(.white)
-                        .font(.largeTitle)
-                        .frame(height: 64)
-                        .padding(.horizontal, 24)
-                        .background(.white.opacity(0.3))
-                        .cornerRadius(32)
-                        .padding()
-                }
-                
                 Spacer()
-                
+
                 Button {
                     withAnimation(.spring()) {
                         index = 0
@@ -213,7 +196,7 @@ struct ContentView: View {
             start()
         }
     }
-    
+
     func entireOffset() -> CGSize {
         let offset: CGSize
         switch selectedItem {
@@ -230,10 +213,10 @@ struct ContentView: View {
         default:
             offset = .zero
         }
-        
+
         return offset
     }
-    
+
     func nextStep(_ currentID: UUID, delay: CGFloat, animation: Animation = .spring()) {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
             if currentID == sessionID {
@@ -243,20 +226,21 @@ struct ContentView: View {
             }
         }
     }
-    
+
     func addBubbles() {
-        for index in 0..<36 {
+        for index in 0 ..< 36 {
             DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
                 addBubble(colorOffset: CGFloat(index) / 18)
             }
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
             removeBubbles()
         }
     }
+
     func removeBubbles() {
-        for index in 0..<bubbles.count {
+        for index in 0 ..< bubbles.count {
             DispatchQueue.main.asyncAfter(deadline: .now() + CGFloat(index) / 15) {
                 if bubbles.count >= 1 {
                     withAnimation(.spring(
@@ -269,41 +253,41 @@ struct ContentView: View {
                 }
             }
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             addBubbles()
         }
     }
-    
+
     func start() {
         sessionID = UUID()
         let currentID = sessionID
-        
+
         nextStep(currentID, delay: 1)
         nextStep(currentID, delay: 2)
         nextStep(currentID, delay: 3, animation: .easeOut(duration: 3))
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             if currentID == sessionID {
                 index = 4
                 addBubbles()
             }
         }
-        
+
         nextStep(currentID, delay: 5, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
-        
+
         nextStep(currentID, delay: 6)
-        
+
         nextStep(currentID, delay: 7, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
-        
+
         nextStep(currentID, delay: 8, animation: .easeOut(duration: 6))
         DispatchQueue.main.asyncAfter(deadline: .now() + 9) {
             if currentID == sessionID {
@@ -312,33 +296,33 @@ struct ContentView: View {
                 }
             }
         }
-        
+
         nextStep(currentID, delay: 9, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
-        
+
         /// hide text
         nextStep(currentID, delay: 10, animation: .spring(
             response: 0.8,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
-        
+
         nextStep(currentID, delay: 11, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
-        
+
         nextStep(currentID, delay: 17, animation: .spring(
             response: 3,
             dampingFraction: 0.7,
             blendDuration: 0.8
         ))
     }
-    
+
     func getRotationDegrees() -> CGFloat {
         if index >= 9, selectedItem == 0 {
             return 0
@@ -347,16 +331,16 @@ struct ContentView: View {
         }
         return 0
     }
-    
+
     func addBubble(colorOffset: CGFloat) {
         let uiColor = UIColor.systemBlue.offset(by: colorOffset)
-        
+
         let piPercent = colorOffset * 2 * .pi
-        
+
         let x: CGFloat
         let y: CGFloat
         let alpha: CGFloat
-        
+
         if colorOffset >= 1 {
             x = cos(piPercent) * 340
             y = sin(piPercent) * 340
@@ -366,7 +350,7 @@ struct ContentView: View {
             y = sin(piPercent) * 200
             alpha = 8
         }
-        
+
         let newBubble = Bubble(
             length: 300,
             offset: CGSize(
@@ -376,7 +360,7 @@ struct ContentView: View {
             color: uiColor,
             opacity: alpha
         )
-        
+
         withAnimation(.spring(
             response: 0.8,
             dampingFraction: 0.6,
@@ -387,24 +371,25 @@ struct ContentView: View {
     }
 }
 
-extension View {
-    public func gradientForeground(_ colors: [Color]) -> some View {
-        self.overlay(
+public extension View {
+    func gradientForeground(_ colors: [Color]) -> some View {
+        overlay(
             LinearGradient(
                 colors: colors,
                 startPoint: .topLeading,
-                endPoint: .bottomTrailing)
+                endPoint: .bottomTrailing
+            )
         )
-            .mask(self)
+        .mask(self)
     }
 }
 
 public extension UIColor {
     /**
      Create a UIColor from a hex code.
-     
+
      Example:
-     
+
      let color = UIColor(hex: 0x00aeef)
      */
     convenience init(hex: UInt, alpha: CGFloat = 1) {
@@ -420,10 +405,10 @@ public extension UIColor {
 struct DotsView: View {
     let color: Color
     let offset: Bool
-    
+
     var body: some View {
         HStack {
-            ForEach(0..<100, id: \.self) { index in
+            ForEach(0 ..< 100, id: \.self) { index in
                 Circle()
                     .fill(color)
                     .frame(width: 10, height: 10)
@@ -434,8 +419,8 @@ struct DotsView: View {
                             dampingFraction: 0.1,
                             blendDuration: 1
                         )
-                            .delay(Double(index) * 0.08)
-                        , value: offset
+                        .delay(Double(index) * 0.08),
+                        value: offset
                     )
             }
         }
@@ -455,7 +440,7 @@ extension UIColor {
     func offset(by offset: CGFloat) -> UIColor {
         let (h, s, b, a) = hsba
         var newHue = h - offset
-        
+
         /// make it go back to positive
         while newHue <= 0 {
             newHue += 1
@@ -463,7 +448,7 @@ extension UIColor {
         let normalizedHue = newHue.truncatingRemainder(dividingBy: 1)
         return UIColor(hue: normalizedHue, saturation: s, brightness: b, alpha: a)
     }
-    
+
     var hsba: (h: CGFloat, s: CGFloat, b: CGFloat, a: CGFloat) {
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         self.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
@@ -474,7 +459,7 @@ extension UIColor {
 struct BackgroundView: View {
     let index: Int
     let bubbles: [Bubble]
-    
+
     var body: some View {
         if index >= 2 {
             Color.black
@@ -493,7 +478,7 @@ struct BackgroundView: View {
                                     LinearGradient(
                                         colors: [
                                             Color(uiColor: bubble.color),
-                                            Color(uiColor: bubble.color.offset(by: 0.1))
+                                            Color(uiColor: bubble.color.offset(by: 0.1)),
                                         ],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing

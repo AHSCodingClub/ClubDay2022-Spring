@@ -6,9 +6,8 @@
 //  Copyright © 2022 A. Zheng. All rights reserved.
 //
 
-
-import SwiftUI
 import ARKit
+import SwiftUI
 
 class ARViewModel: ObservableObject {
     var addText: (() -> Void)?
@@ -21,15 +20,15 @@ class ARViewModel: ObservableObject {
 struct AugmentedRealityButton: View {
     var image: String
     var text: String
-    let action: (() -> Void)
-    
+    let action: () -> Void
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 10) {
                 Image(systemName: image)
                     .foregroundColor(.purple)
                     .font(.title2)
-                
+
                 Text(text)
                     .foregroundColor(Color(uiColor: .label))
             }
@@ -40,11 +39,11 @@ struct AugmentedRealityButton: View {
         }
     }
 }
+
 struct AugmentedRealityView: View {
     let focused: Bool
     @StateObject var model = ARViewModel()
 
-    
     var body: some View {
         VStack(spacing: 0) {
             ARViewControllerRepresentable(model: model)
@@ -62,7 +61,7 @@ struct AugmentedRealityView: View {
                             .padding()
                     }
                 }
-            
+
             HStack {
                 AugmentedRealityButton(image: "textformat", text: "Text") {
                     model.addText?()
@@ -87,42 +86,40 @@ struct AugmentedRealityView: View {
 }
 
 struct ARViewControllerRepresentable: UIViewControllerRepresentable {
-    
     @ObservedObject var model: ARViewModel
-    
-    func makeUIViewController(context: Context) -> ARViewController {
+
+    func makeUIViewController(context _: Context) -> ARViewController {
         return ARViewController(model: model)
     }
-    
-    func updateUIViewController(_ uiViewController: ARViewController, context: Context) {
-        
-    }
+
+    func updateUIViewController(_: ARViewController, context _: Context) {}
 }
 
 class ARViewController: UIViewController, ARSCNViewDelegate {
     var model: ARViewModel
     var sceneView: ARSCNView!
     var nodes = [SCNNode]()
-    
+
     let configuration = ARWorldTrackingConfiguration()
-    
-    public required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    public required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     init(model: ARViewModel) {
         self.model = model
-        self.configuration.planeDetection = .horizontal
-        
+        configuration.planeDetection = .horizontal
+
         super.init(nibName: nil, bundle: nil)
-        
+
         model.clear = { [weak self] in
             guard let self = self else { return }
             for node in self.nodes {
                 node.removeFromParentNode()
             }
         }
-        
+
         model.resume = { [weak self] resume in
             guard let self = self else { return }
             if resume {
@@ -131,14 +128,14 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 self.sceneView.session.pause()
             }
         }
-        
+
         model.addText = { [weak self] in
             guard let self = self else { return }
             if let position = self.getPosition() {
                 let textGeometry = SCNText(string: "Coding Club", extrusionDepth: 0.8)
                 textGeometry.font = UIFont.systemFont(ofSize: 18, weight: .medium)
                 textGeometry.firstMaterial?.diffuse.contents = UIColor.systemBlue
-                
+
                 let node = SCNNode(geometry: textGeometry)
                 let lookAtConstraint = SCNBillboardConstraint()
                 node.constraints = [lookAtConstraint]
@@ -152,13 +149,13 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 self.sceneView.scene.rootNode.addChildNode(node)
             }
         }
-        
+
         model.addSphere = { [weak self] in
             guard let self = self else { return }
             if let position = self.getPosition() {
                 let sphereGeometry = SCNSphere(radius: 0.06)
                 sphereGeometry.firstMaterial?.diffuse.contents = UIColor.green
-                
+
                 let node = SCNNode(geometry: sphereGeometry)
                 node.position = SCNVector3(
                     x: position.x,
@@ -174,14 +171,14 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
             if let position = self.getPosition() {
                 let cylinderGeometry = SCNCylinder(radius: 0.06, height: 0.1)
                 cylinderGeometry.firstMaterial?.diffuse.contents = UIColor.gray
-                
+
                 let cylinderNode = SCNNode(geometry: cylinderGeometry)
                 cylinderNode.position = SCNVector3(
                     x: position.x,
                     y: position.y,
                     z: position.z
                 )
-                
+
                 let particleSystem = SCNParticleSystem()
                 particleSystem.birthRate = 80
                 particleSystem.particleSize = 0.01
@@ -191,8 +188,7 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 particleSystem.spreadingAngle = 10
                 particleSystem.isAffectedByGravity = true
                 particleSystem.particleColorVariation = SCNVector4(0.25, 0, 0, 0)
-                
-                
+
                 let particlesNode = SCNNode()
                 particlesNode.position = SCNVector3(
                     x: position.x,
@@ -206,26 +202,25 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
                 self.sceneView.scene.rootNode.addChildNode(particlesNode)
             }
         }
-        
     }
-    
+
     var crosshairImageView: UIImageView!
-    
+
     override func loadView() {
         super.loadView()
         view = UIView()
         view.backgroundColor = .black
-        
-        self.sceneView = ARSCNView()
+
+        sceneView = ARSCNView()
         view.addSubview(sceneView)
         sceneView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             sceneView.topAnchor.constraint(equalTo: view.topAnchor),
             sceneView.rightAnchor.constraint(equalTo: view.rightAnchor),
             sceneView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            sceneView.leftAnchor.constraint(equalTo: view.leftAnchor)
+            sceneView.leftAnchor.constraint(equalTo: view.leftAnchor),
         ])
-        
+
         let configuration = UIImage.SymbolConfiguration(pointSize: 36)
         let image = UIImage(systemName: "plus", withConfiguration: configuration)?.withTintColor(.white, renderingMode: .alwaysOriginal)
         crosshairImageView = UIImageView(image: image)
@@ -233,21 +228,21 @@ class ARViewController: UIViewController, ARSCNViewDelegate {
         crosshairImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             crosshairImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            crosshairImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            crosshairImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
-        
-        self.sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         sceneView.autoenablesDefaultLighting = true
         sceneView.session.run(configuration)
     }
-    
+
     func getPosition() -> simd_float4? {
-        let touchLocation = self.crosshairImageView.center
+        let touchLocation = crosshairImageView.center
         let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
         if let hitResult = results.first {
             let position = hitResult.worldTransform.columns.3
